@@ -7,7 +7,8 @@
     position: absolute;
     width: 10px;
     height: 10px;
-    pointer-events: none; 
-    z-index: 1000; /* Ensure pixels are on top */
-    border: solid 1px blue;
+    border: 1px solid rgba(0, 0, 0, 0.5); /* Change to border */
+    pointer-events: none;
+    transition: opacity 0.3s; /* Smooth fade in/out */
+    z-index: 99999;
 }
