@@ -3,9 +3,10 @@ var map = L.map('map').setView([20, 0], 2); // Initialize map
 
 // Add OpenStreetMap tiles as a basemap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    maxZoom: 19,
 }).addTo(map);
 
+// Function to create pixel grid
 function createPixelGrid() {
     // Clear existing pixels
     const existingPixels = document.querySelectorAll('.pixel');
@@ -14,9 +15,12 @@ function createPixelGrid() {
     const bounds = map.getBounds();
     const pixelSize = 10; // Size of each pixel in pixels
 
-    // Convert pixel size to degrees (approximate)
-    const latIncrement = (bounds.getNorth() - bounds.getSouth()) / (map.getSize().y / pixelSize);
-    const lngIncrement = (bounds.getEast() - bounds.getWest()) / (map.getSize().x / pixelSize);
+    // Get the current zoom level
+    const zoom = map.getZoom();
+
+    // Calculate latitude and longitude increments based on the map bounds
+    const latIncrement = (bounds.getNorth() - bounds.getSouth()) / (Math.ceil((bounds.getNorth() - bounds.getSouth()) / pixelSize)); // Latitude spacing
+    const lngIncrement = (bounds.getEast() - bounds.getWest()) / (Math.ceil((bounds.getEast() - bounds.getWest()) / pixelSize)); // Longitude spacing
 
     for (let lat = bounds.getSouth(); lat < bounds.getNorth(); lat += latIncrement) {
         for (let lng = bounds.getWest(); lng < bounds.getEast(); lng += lngIncrement) {
@@ -39,6 +43,7 @@ map.on('moveend zoomend', createPixelGrid);
 // Trigger grid creation if the map is already loaded
 if (map._loaded) {
     createPixelGrid();
+    map.fire('moveend');
 }
 
 // Load GeoJSON data
