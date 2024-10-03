@@ -8,7 +8,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 // Function to create fixed pixel grid
 function createFixedPixelGrid() {
     // Clear existing pixels
-    const existingPixels = document.querySelectorAll('.pixel');
+    const existingPixels = document.querySelectorAll('#pixel-grid .pixel');
     existingPixels.forEach(pixel => pixel.remove());
 
     const pixelSize = 10; // Size of each pixel in pixels
@@ -21,7 +21,7 @@ function createFixedPixelGrid() {
             pixel.className = 'pixel';
             pixel.style.left = `${x}px`;
             pixel.style.top = `${y}px`;
-            document.getElementById('map').appendChild(pixel);
+            document.getElementById('pixel-grid').appendChild(pixel); // Append to the new grid container
         }
     }
 }
@@ -41,15 +41,14 @@ if (map._loaded) {
 fetch('data/countries.geojson')
     .then(response => response.json())
     .then(data => {
-        L.geoJSON(data, {
+        const geoJsonLayer = L.geoJSON(data, {
             style: function (feature) {
                 return {
                     color: "black",
                     fillColor: "lightgreen",
                     weight: 1,
                     opacity: 1,
-                    fillOpacity: 0.7,
-                    className: 'country-overlay'
+                    fillOpacity: 0.7
                 };
             },
             onEachFeature: function (feature, layer) {
@@ -57,5 +56,12 @@ fetch('data/countries.geojson')
                     layer.bindTooltip(feature.properties.ADMIN); // Show country name on hover
                 }
             }
-        }).addTo(map);
+        });
+
+        // Add GeoJSON layer to the map and set a high z-index
+        geoJsonLayer.addTo(map);
+        geoJsonLayer.setZIndex(1000); // Ensures it's above the pixel grid
+    })
+    .catch(error => {
+        console.error('Error loading GeoJSON:', error);
     });
