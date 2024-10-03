@@ -18,9 +18,12 @@ function createPixelGrid() {
     // Get the current zoom level
     const zoom = map.getZoom();
 
-    // Calculate latitude and longitude increments based on the map bounds
-    const latIncrement = (bounds.getNorth() - bounds.getSouth()) / (Math.ceil((bounds.getNorth() - bounds.getSouth()) / pixelSize)); // Latitude spacing
-    const lngIncrement = (bounds.getEast() - bounds.getWest()) / (Math.ceil((bounds.getEast() - bounds.getWest()) / pixelSize)); // Longitude spacing
+    // Set a fixed number of rows
+    const numRows = 30; // Change this number as needed
+    const latIncrement = (bounds.getNorth() - bounds.getSouth()) / numRows;
+
+    // Calculate the longitude increment based on the pixel size and current zoom level
+    const lngIncrement = pixelSize * (360 / (Math.pow(2, zoom) * 256)); // degrees per pixel
 
     for (let lat = bounds.getSouth(); lat < bounds.getNorth(); lat += latIncrement) {
         for (let lng = bounds.getWest(); lng < bounds.getEast(); lng += lngIncrement) {
