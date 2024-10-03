@@ -1,4 +1,3 @@
-// main.js
 var map = L.map('map').setView([20, 0], 2); // Initialize map
 
 // Add OpenStreetMap tiles as a basemap
@@ -6,54 +5,43 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
 }).addTo(map);
 
-// Function to create pixel grid
-function createPixelGrid() {
+// Function to create fixed pixel grid
+function createFixedPixelGrid() {
     // Clear existing pixels
-    const existingPixels = document.querySelectorAll('.pixel');
+    const existingPixels = document.querySelectorAll('#pixel-grid .pixel');
     existingPixels.forEach(pixel => pixel.remove());
 
-    const bounds = map.getBounds();
     const pixelSize = 10; // Size of each pixel in pixels
+    const mapWidth = map.getSize().x; // Get the current width of the map
+    const mapHeight = map.getSize().y; // Get the current height of the map
 
-    // Get the current zoom level
-    const zoom = map.getZoom();
-
-    // Set a fixed number of rows
-    const numRows = 30; // Change this number as needed
-    const latIncrement = (bounds.getNorth() - bounds.getSouth()) / numRows;
-
-    // Calculate the longitude increment based on the pixel size and current zoom level
-    const lngIncrement = pixelSize * (360 / (Math.pow(2, zoom) * 256)); // degrees per pixel
-
-    for (let lat = bounds.getSouth(); lat < bounds.getNorth(); lat += latIncrement) {
-        for (let lng = bounds.getWest(); lng < bounds.getEast(); lng += lngIncrement) {
+    for (let x = 0; x < mapWidth; x += pixelSize) {
+        for (let y = 0; y < mapHeight; y += pixelSize) {
             const pixel = document.createElement('div');
             pixel.className = 'pixel';
-            const point = map.latLngToLayerPoint([lat, lng]);
-            pixel.style.left = `${point.x}px`;
-            pixel.style.top = `${point.y}px`;
-            document.getElementById('map').appendChild(pixel);
+            pixel.style.left = `${x}px`;
+            pixel.style.top = `${y}px`;
+            document.getElementById('pixel-grid').appendChild(pixel); // Append to the new grid container
         }
     }
 }
 
 // Wait for the map to fully load before creating the pixel grid
-map.on('load', createPixelGrid);
+map.on('load', createFixedPixelGrid);
 
 // Update pixel grid when the map moves or zooms
-map.on('moveend zoomend', createPixelGrid);
+map.on('moveend zoomend', createFixedPixelGrid);
 
 // Trigger grid creation if the map is already loaded
 if (map._loaded) {
-    createPixelGrid();
-    map.fire('moveend');
+    createFixedPixelGrid();
 }
 
 // Load GeoJSON data
 fetch('data/countries.geojson')
     .then(response => response.json())
     .then(data => {
-        L.geoJSON(data, {
+        const geoJsonLayer = L.geoJSON(data, {
             style: function (feature) {
                 return {
                     color: "black",
@@ -68,5 +56,12 @@ fetch('data/countries.geojson')
                     layer.bindTooltip(feature.properties.ADMIN); // Show country name on hover
                 }
             }
-        }).addTo(map);
+        });
+
+        // Add GeoJSON layer to the map and set a high z-index
+        geoJsonLayer.addTo(map);
+        geoJsonLayer.setZIndex(1000); // Ensures it's above the pixel grid
+    })
+    .catch(error => {
+        console.error('Error loading GeoJSON:', error);
     });

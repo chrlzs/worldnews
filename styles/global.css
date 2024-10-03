@@ -3,12 +3,24 @@
     position: relative; /* To position overlay elements */
 }
 
+#pixel-grid {
+    position: absolute; /* Position the pixel grid absolutely */
+    top: 0; /* Align to top */
+    left: 0; /* Align to left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    pointer-events: none; /* Disable pointer events for the grid pixels */
+    z-index: 999; /* Ensure pixels are below country overlays */
+}
+
+#pixel-grid {
+    background-color: rgba(255, 255, 255, 0.5); /* Example: Semi-transparent white */
+}
+
 .pixel {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.5); /* Change to border */
-    pointer-events: none;
-    transition: opacity 0.3s; /* Smooth fade in/out */
-    z-index: 99999;
+    position: absolute; /* Position the pixels absolutely */
+    width: 10px; /* Width of the pixel */
+    height: 10px; /* Height of the pixel */
+    border: 1px solid rgba(0, 0, 0, 0.5); /* Use border instead of background for visibility */
+    pointer-events: none; /* Disable pointer events for the grid pixels */
 }
