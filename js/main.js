@@ -1,60 +1,32 @@
-var map = L.map('map').setView([20, 0], 2); // Initialize map
+// Initialize the map
+var map = L.map('map').setView([0, 0], 2);
 
-// Add OpenStreetMap tiles as a basemap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
 
-// Function to create fixed pixel grid
-function createFixedPixelGrid() {
-    // Clear existing pixels
-    const existingPixels = document.querySelectorAll('#pixel-grid .pixel');
-    existingPixels.forEach(pixel => pixel.remove());
+function createPixelGrid() {
+    const pixelGrid = document.getElementById('pixel-grid');
+    pixelGrid.innerHTML = '';
 
-    const pixelSize = 10; // Size of each pixel in pixels
-    const mapWidth = map.getSize().x; // Get the current width of the map
-    const mapHeight = map.getSize().y; // Get the current height of the map
+    const pixelSize = 10; // Reduced size for a finer grid
+    const mapSize = map.getSize();
 
-    for (let x = 0; x < mapWidth; x += pixelSize) {
-        for (let y = 0; y < mapHeight; y += pixelSize) {
+    for (let x = 0; x < mapSize.x; x += pixelSize) {
+        for (let y = 0; y < mapSize.y; y += pixelSize) {
             const pixel = document.createElement('div');
             pixel.className = 'pixel';
             pixel.style.left = `${x}px`;
             pixel.style.top = `${y}px`;
-            document.getElementById('pixel-grid').appendChild(pixel); // Append to the new grid container
+            pixelGrid.appendChild(pixel);
         }
     }
 }
 
-// This function will keep the grid overlay fixed
-function updatePixelGridPosition() {
-    const mapContainer = document.getElementById('map');
-    const gridContainer = document.getElementById('pixel-grid');
-    const mapRect = mapContainer.getBoundingClientRect();
+createPixelGrid();
+map.on('resize moveend zoomend', createPixelGrid);
 
-    // Keep grid container synced with the map size and position
-    gridContainer.style.width = `${mapRect.width}px`;
-    gridContainer.style.height = `${mapRect.height}px`;
-    gridContainer.style.left = `${mapRect.left}px`;
-    gridContainer.style.top = `${mapRect.top}px`;
-}
-
-// Wait for the map to fully load before creating the pixel grid
-map.on('load', createFixedPixelGrid);
-
-// Update the grid and keep it "sticky" on move or zoom
-map.on('moveend zoomend', function() {
-    createFixedPixelGrid();
-    updatePixelGridPosition(); // Update position and size after every move or zoom
-});
-
-// Trigger grid creation if the map is already loaded
-if (map._loaded) {
-    createFixedPixelGrid();
-    updatePixelGridPosition();
-}
-
-// Load GeoJSON data
+// Load GeoJSON data and display country boundaries
 fetch('data/countries.geojson')
     .then(response => response.json())
     .then(data => {
@@ -70,20 +42,32 @@ fetch('data/countries.geojson')
             },
             onEachFeature: function (feature, layer) {
                 if (feature.properties && feature.properties.ADMIN) {
-                    // Use bindPopup for click-to-show behavior
                     layer.bindPopup(feature.properties.ADMIN, { closeOnClick: false, autoClose: false });
-
-                    // Open popup on click
-                    layer.on('click', function (e) {
-                        layer.openPopup(); // Open popup on click
-                    });
                 }
             }
-        });
+        }).addTo(map);
 
-        // Add GeoJSON layer to the map
-        geoJsonLayer.addTo(map);
+        // Handle map clicks to open popups
+        map.on('click', function(e) {
+            geoJsonLayer.eachLayer(function(layer) {
+                if (layer.getBounds && layer.getBounds().contains(e.latlng)) {
+                    layer.openPopup(e.latlng);
+                }
+            });
+        });
     })
     .catch(error => {
         console.error('Error loading GeoJSON:', error);
     });
+
+// Handle clicks on the pixel grid
+document.getElementById('pixel-grid').addEventListener('click', function(e) {
+    const mapPoint = map.containerPointToLatLng([e.clientX, e.clientY]);
+    
+    // Trigger a map click
+    map.fire('click', {
+        latlng: mapPoint,
+        layerPoint: map.latLngToLayerPoint(mapPoint),
+        containerPoint: map.latLngToContainerPoint(mapPoint)
+    });
+});
