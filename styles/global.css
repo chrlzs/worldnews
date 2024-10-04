@@ -21,3 +21,7 @@
     border: 1px solid rgba(0, 0, 0, 0.3); /* Use border instead of background for visibility */
     pointer-events: none; /* Disable pointer events for the grid pixels */
 }
+
+.leaflet-popup {
+    z-index: 1001 !important; /* Ensure popups are on top */
+}
