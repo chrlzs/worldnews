@@ -70,14 +70,19 @@ fetch('data/countries.geojson')
             },
             onEachFeature: function (feature, layer) {
                 if (feature.properties && feature.properties.ADMIN) {
-                    layer.bindTooltip(feature.properties.ADMIN); // Show country name on hover
+                    // Use bindPopup for click-to-show behavior
+                    layer.bindPopup(feature.properties.ADMIN, { closeOnClick: false, autoClose: false });
+
+                    // Open popup on click
+                    layer.on('click', function (e) {
+                        layer.openPopup(); // Open popup on click
+                    });
                 }
             }
         });
 
-        // Add GeoJSON layer to the map and set a high z-index
+        // Add GeoJSON layer to the map
         geoJsonLayer.addTo(map);
-        geoJsonLayer.setZIndex(1000); // Ensures it's above the pixel grid
     })
     .catch(error => {
         console.error('Error loading GeoJSON:', error);
