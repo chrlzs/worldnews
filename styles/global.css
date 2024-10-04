@@ -21,6 +21,6 @@
     position: absolute; /* Position the pixels absolutely */
     width: 10px; /* Width of the pixel */
     height: 10px; /* Height of the pixel */
-    border: 1px solid rgba(0, 0, 0, 0.5); /* Use border instead of background for visibility */
+    border: 1px solid rgba(0, 0, 0, 0.3); /* Use border instead of background for visibility */
     pointer-events: none; /* Disable pointer events for the grid pixels */
 }
