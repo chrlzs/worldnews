@@ -26,15 +26,32 @@ function createFixedPixelGrid() {
     }
 }
 
+// This function will keep the grid overlay fixed
+function updatePixelGridPosition() {
+    const mapContainer = document.getElementById('map');
+    const gridContainer = document.getElementById('pixel-grid');
+    const mapRect = mapContainer.getBoundingClientRect();
+
+    // Keep grid container synced with the map size and position
+    gridContainer.style.width = `${mapRect.width}px`;
+    gridContainer.style.height = `${mapRect.height}px`;
+    gridContainer.style.left = `${mapRect.left}px`;
+    gridContainer.style.top = `${mapRect.top}px`;
+}
+
 // Wait for the map to fully load before creating the pixel grid
 map.on('load', createFixedPixelGrid);
 
-// Update pixel grid when the map moves or zooms
-map.on('moveend zoomend', createFixedPixelGrid);
+// Update the grid and keep it "sticky" on move or zoom
+map.on('moveend zoomend', function() {
+    createFixedPixelGrid();
+    updatePixelGridPosition(); // Update position and size after every move or zoom
+});
 
 // Trigger grid creation if the map is already loaded
 if (map._loaded) {
     createFixedPixelGrid();
+    updatePixelGridPosition();
 }
 
 // Load GeoJSON data
