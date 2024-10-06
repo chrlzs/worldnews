@@ -33,6 +33,10 @@ html, body {
 }
 
 .pixel:hover {
+    background-color: rgba(0, 0, 255, 0.3); /* Hover effect for the single pixel */
+}
+
+.pixel:hover {
     background-color: rgba(0, 0, 255, 0.3);
 }
 

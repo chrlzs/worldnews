@@ -20,15 +20,13 @@ function createPixelGrid() {
             pixel.style.top = `${y}px`;
             pixel.style.opacity = 0.3; // Set default opacity
 
-            // Add hover effect to pixel and surrounding ones
+            // Add hover effect to highlight only the hovered pixel
             pixel.addEventListener('mouseenter', function() {
-                pixel.style.backgroundColor = 'rgba(0, 0, 255, 0.3)'; // Main pixel hover effect
-                highlightAdjacentPixels(x, y, pixelSize, 'rgba(0, 0, 255, 0.1)'); // Add hover effect to adjacent pixels
+                pixel.style.backgroundColor = 'rgba(0, 0, 255, 0.3)'; // Hover effect for the single pixel
             });
 
             pixel.addEventListener('mouseleave', function() {
-                pixel.style.backgroundColor = ''; // Reset main pixel
-                resetAdjacentPixels(x, y, pixelSize); // Reset adjacent pixels
+                pixel.style.backgroundColor = ''; // Reset the pixel after hover
             });
 
             pixelGrid.appendChild(pixel);
