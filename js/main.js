@@ -4,12 +4,11 @@ var map = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
-
 function createPixelGrid() {
     const pixelGrid = document.getElementById('pixel-grid');
     pixelGrid.innerHTML = '';
 
-    const pixelSize = 10; // Pixel size for the grid
+    const pixelSize = 10; // Size for the pixel
     const mapSize = map.getSize();
 
     for (let x = 0; x < mapSize.x; x += pixelSize) {
@@ -18,16 +17,16 @@ function createPixelGrid() {
             pixel.className = 'pixel';
             pixel.style.left = `${x}px`;
             pixel.style.top = `${y}px`;
-            pixel.dataset.x = x;
-            pixel.dataset.y = y;
-            
-            // Hover event listener
+
+            // Add hover effect to pixel and surrounding ones
             pixel.addEventListener('mouseenter', function() {
-                highlightAdjacentPixels(this);
+                pixel.style.backgroundColor = 'rgba(0, 0, 255, 0.7)'; // Main pixel hover effect
+                highlightAdjacentPixels(x, y, pixelSize, 'rgba(0, 0, 255, 0.3)'); // Add hover effect to adjacent pixels
             });
 
             pixel.addEventListener('mouseleave', function() {
-                removeHighlightAdjacentPixels(this);
+                pixel.style.backgroundColor = ''; // Reset main pixel
+                resetAdjacentPixels(x, y, pixelSize); // Reset adjacent pixels
             });
 
             pixelGrid.appendChild(pixel);
@@ -35,61 +34,31 @@ function createPixelGrid() {
     }
 }
 
-// Function to highlight the current pixel and its neighbors
-function highlightAdjacentPixels(pixel) {
-    const x = parseInt(pixel.dataset.x);
-    const y = parseInt(pixel.dataset.y);
-    const pixelSize = 10;
+// Function to highlight adjacent pixels with a lesser opacity
+function highlightAdjacentPixels(x, y, pixelSize, color) {
+    const adjacentPositions = [];
 
-    // Get current and adjacent pixels (8 directions: top, bottom, left, right, and corners)
-    const positions = [
-        { x: x, y: y },                 // Current pixel
-        { x: x - pixelSize, y: y },      // Left
-        { x: x + pixelSize, y: y },      // Right
-        { x: x, y: y - pixelSize },      // Top
-        { x: x, y: y + pixelSize },      // Bottom
-        { x: x - pixelSize, y: y - pixelSize }, // Top-left
-        { x: x + pixelSize, y: y - pixelSize }, // Top-right
-        { x: x - pixelSize, y: y + pixelSize }, // Bottom-left
-        { x: x + pixelSize, y: y + pixelSize }  // Bottom-right
-    ];
+    // Loop to cover a 5x5 grid centered on the hovered pixel
+    for (let i = -2; i <= 2; i++) {
+        for (let j = -2; j <= 2; j++) {
+            if (i !== 0 || j !== 0) { // Exclude the center pixel itself
+                adjacentPositions.push([x + i * pixelSize, y + j * pixelSize]);
+            }
+        }
+    }
 
-    // Loop through the positions and apply hover effect
-    positions.forEach(position => {
-        const adjacentPixel = document.querySelector(`.pixel[data-x="${position.x}"][data-y="${position.y}"]`);
-        if (adjacentPixel) {
-            adjacentPixel.classList.add('hovered');
+    adjacentPositions.forEach(pos => {
+        const adjPixel = document.elementFromPoint(pos[0], pos[1]);
+        if (adjPixel && adjPixel.classList.contains('pixel')) {
+            adjPixel.style.backgroundColor = color; // Set lesser opacity for adjacent pixels
         }
     });
 }
 
-// Function to remove the hover effect from the current and adjacent pixels
-function removeHighlightAdjacentPixels(pixel) {
-    const x = parseInt(pixel.dataset.x);
-    const y = parseInt(pixel.dataset.y);
-    const pixelSize = 10;
-
-    const positions = [
-        { x: x, y: y },
-        { x: x - pixelSize, y: y },
-        { x: x + pixelSize, y: y },
-        { x: x, y: y - pixelSize },
-        { x: x, y: y + pixelSize },
-        { x: x - pixelSize, y: y - pixelSize },
-        { x: x + pixelSize, y: y - pixelSize },
-        { x: x - pixelSize, y: y + pixelSize },
-        { x: x + pixelSize, y: y + pixelSize }
-    ];
-
-    // Loop through the positions and remove the hover effect
-    positions.forEach(position => {
-        const adjacentPixel = document.querySelector(`.pixel[data-x="${position.x}"][data-y="${position.y}"]`);
-        if (adjacentPixel) {
-            adjacentPixel.classList.remove('hovered');
-        }
-    });
+// Function to reset adjacent pixels
+function resetAdjacentPixels(x, y, pixelSize) {
+    highlightAdjacentPixels(x, y, pixelSize, ''); // Reset adjacent pixels by clearing the color
 }
-
 createPixelGrid();
 map.on('resize moveend zoomend', createPixelGrid);
 
