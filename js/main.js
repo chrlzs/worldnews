@@ -4,6 +4,7 @@ var map = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
 }).addTo(map);
+
 function createPixelGrid() {
     const pixelGrid = document.getElementById('pixel-grid');
     pixelGrid.innerHTML = '';
@@ -17,11 +18,12 @@ function createPixelGrid() {
             pixel.className = 'pixel';
             pixel.style.left = `${x}px`;
             pixel.style.top = `${y}px`;
+            pixel.style.opacity = 0.3; // Set default opacity
 
             // Add hover effect to pixel and surrounding ones
             pixel.addEventListener('mouseenter', function() {
-                pixel.style.backgroundColor = 'rgba(0, 0, 255, 0.7)'; // Main pixel hover effect
-                highlightAdjacentPixels(x, y, pixelSize, 'rgba(0, 0, 255, 0.3)'); // Add hover effect to adjacent pixels
+                pixel.style.backgroundColor = 'rgba(0, 0, 255, 0.3)'; // Main pixel hover effect
+                highlightAdjacentPixels(x, y, pixelSize, 'rgba(0, 0, 255, 0.1)'); // Add hover effect to adjacent pixels
             });
 
             pixel.addEventListener('mouseleave', function() {
@@ -109,3 +111,36 @@ document.getElementById('pixel-grid').addEventListener('click', function(e) {
         containerPoint: map.latLngToContainerPoint(mapPoint)
     });
 });
+
+// Initialize radar animation
+let currentColumn = 0; // Track the current column being animated
+const pixelSize = 10; // Size of each pixel
+
+function animateRadarEffect() {
+    const pixelGrid = document.getElementById('pixel-grid');
+    const pixels = pixelGrid.getElementsByClassName('pixel');
+    const totalColumns = Math.ceil(map.getSize().x / pixelSize); // Total columns based on pixel size
+
+    // Reset all pixels to default opacity
+    for (let i = 0; i < pixels.length; i++) {
+        pixels[i].style.opacity = 0.3; // Default opacity for all pixels
+    }
+
+    // Increase opacity for the current column
+    for (let i = currentColumn * (map.getSize().y / pixelSize); i < (currentColumn + 1) * (map.getSize().y / pixelSize); i++) {
+        if (pixels[i]) {
+            //console.log(pixels[i]);
+            pixels[i].style.opacity = 1; // Full opacity for the current column
+            pixels[i].style.backgroundColor = "green"; 
+        }
+    }
+
+    // Move to the next column
+    currentColumn = (currentColumn + 1) % totalColumns; // Loop back to the start
+
+    // Set a timeout for the next animation frame (adjust speed as needed)
+    setTimeout(animateRadarEffect, 100); // Adjust timing for the radar effect
+}
+
+// Start the radar animation
+animateRadarEffect();
