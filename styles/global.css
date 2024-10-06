@@ -26,25 +26,18 @@ html, body {
     width: 10px;
     height: 10px;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s ease,  opacity 0.2s;;
+    transition: background-color 0.2s ease, opacity 0.2s;
     pointer-events: auto;
     cursor: pointer;
     z-index: 500;
 }
 
 .pixel:hover {
-    background-color: rgba(0, 0, 255, 0.3); /* Hover effect for the single pixel */
-}
-
-.pixel:hover {
-    background-color: rgba(0, 0, 255, 0.3);
+    background-color: rgba(0, 0, 255, 0.3); /* Single pixel hover effect */
 }
 
 /* Ensure map panes are below the pixel grid */
-.leaflet-map-pane {
-    z-index: 200;
-}
-
+.leaflet-map-pane,
 .leaflet-tile-pane {
     z-index: 200;
 }
@@ -52,28 +45,7 @@ html, body {
 /* Ensure popups and controls are above the pixel grid */
 .leaflet-popup-pane {
     z-index: 1700;
-    position: relative !important; /* Force a new stacking context */
 }
 
 .leaflet-popup {
-    z-index: 99999 !important; /* Ensure the popup itself is on top */
-    position: relative; /* Create a stacking context for popups */
-}
-
-.leaflet-control {
-    z-index: 800;
-}
-
-.leaflet-top,
-.leaflet-bottom {
-    z-index: 1000;
-}
-
-.leaflet-popup-close-button {
-    cursor: pointer; /* Make sure the close button is clickable */
-    z-index: 1800;
-}
-
-.pixel.hovered {
-    background-color: rgba(0, 0, 255, 0.);
-}
+    z-index: 99999 !important
