@@ -120,23 +120,25 @@ function animateRadarEffect() {
     const pixelGrid = document.getElementById('pixel-grid');
     const pixels = pixelGrid.getElementsByClassName('pixel');
     const totalColumns = Math.ceil(map.getSize().x / pixelSize); // Total columns based on pixel size
+    const totalPixelsPerColumn = Math.ceil(map.getSize().y / pixelSize);
 
     // Reset all pixels to default opacity
     for (let i = 0; i < pixels.length; i++) {
         pixels[i].style.opacity = 0.3; // Default opacity for all pixels
+        pixels[i].style.backgroundColor = ''; // Reset background color to default
     }
 
-    // Increase opacity for the current column
-    for (let i = currentColumn * (map.getSize().y / pixelSize); i < (currentColumn + 1) * (map.getSize().y / pixelSize); i++) {
+    // Increase opacity and change color for the current column
+    for (let i = currentColumn * totalPixelsPerColumn; i < (currentColumn + 1) * totalPixelsPerColumn; i++) {
         if (pixels[i]) {
-            //console.log(pixels[i]);
+            console.log(pixels[i]);  // Optional: Debugging to see the selected pixels
             pixels[i].style.opacity = 1; // Full opacity for the current column
-            pixels[i].style.backgroundColor = "green"; 
+            pixels[i].style.backgroundColor = "green";  // Radar column color
         }
     }
 
     // Move to the next column
-    currentColumn = (currentColumn + 1) % totalColumns; // Loop back to the start
+    currentColumn = (currentColumn + 1) % totalColumns; // Loop back to the start after the last column
 
     // Set a timeout for the next animation frame (adjust speed as needed)
     setTimeout(animateRadarEffect, 100); // Adjust timing for the radar effect
