@@ -68,3 +68,7 @@ html, body {
     cursor: pointer; /* Make sure the close button is clickable */
     z-index: 1800;
 }
+
+.pixel.hovered {
+    background-color: rgba(0, 0, 255, 0.1);
+}

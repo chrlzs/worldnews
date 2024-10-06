@@ -7,21 +7,87 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 function createPixelGrid() {
     const pixelGrid = document.getElementById('pixel-grid');
-    pixelGrid.innerHTML = ''; // Clear previous grid
+    pixelGrid.innerHTML = '';
 
-    const pixelSize = 10; // Define the grid size
-    const mapSize = map.getSize(); // Get the size of the map in pixels
+    const pixelSize = 10; // Pixel size for the grid
+    const mapSize = map.getSize();
 
-    // Create the grid
     for (let x = 0; x < mapSize.x; x += pixelSize) {
         for (let y = 0; y < mapSize.y; y += pixelSize) {
             const pixel = document.createElement('div');
             pixel.className = 'pixel';
             pixel.style.left = `${x}px`;
             pixel.style.top = `${y}px`;
+            pixel.dataset.x = x;
+            pixel.dataset.y = y;
+            
+            // Hover event listener
+            pixel.addEventListener('mouseenter', function() {
+                highlightAdjacentPixels(this);
+            });
+
+            pixel.addEventListener('mouseleave', function() {
+                removeHighlightAdjacentPixels(this);
+            });
+
             pixelGrid.appendChild(pixel);
         }
     }
+}
+
+// Function to highlight the current pixel and its neighbors
+function highlightAdjacentPixels(pixel) {
+    const x = parseInt(pixel.dataset.x);
+    const y = parseInt(pixel.dataset.y);
+    const pixelSize = 10;
+
+    // Get current and adjacent pixels (8 directions: top, bottom, left, right, and corners)
+    const positions = [
+        { x: x, y: y },                 // Current pixel
+        { x: x - pixelSize, y: y },      // Left
+        { x: x + pixelSize, y: y },      // Right
+        { x: x, y: y - pixelSize },      // Top
+        { x: x, y: y + pixelSize },      // Bottom
+        { x: x - pixelSize, y: y - pixelSize }, // Top-left
+        { x: x + pixelSize, y: y - pixelSize }, // Top-right
+        { x: x - pixelSize, y: y + pixelSize }, // Bottom-left
+        { x: x + pixelSize, y: y + pixelSize }  // Bottom-right
+    ];
+
+    // Loop through the positions and apply hover effect
+    positions.forEach(position => {
+        const adjacentPixel = document.querySelector(`.pixel[data-x="${position.x}"][data-y="${position.y}"]`);
+        if (adjacentPixel) {
+            adjacentPixel.classList.add('hovered');
+        }
+    });
+}
+
+// Function to remove the hover effect from the current and adjacent pixels
+function removeHighlightAdjacentPixels(pixel) {
+    const x = parseInt(pixel.dataset.x);
+    const y = parseInt(pixel.dataset.y);
+    const pixelSize = 10;
+
+    const positions = [
+        { x: x, y: y },
+        { x: x - pixelSize, y: y },
+        { x: x + pixelSize, y: y },
+        { x: x, y: y - pixelSize },
+        { x: x, y: y + pixelSize },
+        { x: x - pixelSize, y: y - pixelSize },
+        { x: x + pixelSize, y: y - pixelSize },
+        { x: x - pixelSize, y: y + pixelSize },
+        { x: x + pixelSize, y: y + pixelSize }
+    ];
+
+    // Loop through the positions and remove the hover effect
+    positions.forEach(position => {
+        const adjacentPixel = document.querySelector(`.pixel[data-x="${position.x}"][data-y="${position.y}"]`);
+        if (adjacentPixel) {
+            adjacentPixel.classList.remove('hovered');
+        }
+    });
 }
 
 createPixelGrid();
