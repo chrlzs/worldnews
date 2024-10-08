@@ -1,3 +1,9 @@
+![GitHub license](https://img.shields.io/github/license/chrlzs/world-map-dashboard)
+![GitHub contributors](https://img.shields.io/github/contributors/chrlzs/world-map-dashboard)
+![GitHub stars](https://img.shields.io/github/stars/chrlzs/world-map-dashboard?style=social)
+![GitHub forks](https://img.shields.io/github/forks/chrlzs/world-map-dashboard?style=social)
+![GitHub last commit](https://img.shields.io/github/last-commit/chrlzs/world-map-dashboard)
+
 # World Map Dashboard
 
 This project is a dynamic, interactive world map built with [Leaflet.js](https://leafletjs.com/) and GeoJSON data. It allows users to view and interact with a world grid overlay, with countries highlighted on hover and additional features like clickable popups displaying country names. This dashboard can be adapted for various applications such as geographical data visualization, global statistics tracking, or educational tools.
