@@ -46,13 +46,12 @@ document.addEventListener("DOMContentLoaded", function () {
   let startX = 50; // Initial X position
   let startY = 50; // Initial Y position
 
-
   windows.forEach((window, index) => {
     const header = window.querySelector(".window-header");
     let isDragging = false;
     let offsetX, offsetY;
-    window.style.left = `${startX + (index * windowSpacing * 2)}px`;
-    window.style.top = `${startY + (index * windowSpacing)}px`;
+    window.style.left = `${startX + index * windowSpacing * 2}px`;
+    window.style.top = `${startY + index * windowSpacing}px`;
 
     header.addEventListener("mousedown", (e) => {
       isDragging = true;
@@ -83,8 +82,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (rect.bottom > window.innerHeight) {
       window.style.top = `${window.innerHeight - rect.height - 20}px`;
-    }  
-});
+    }
+  });
 
   function drawPixelGrid() {
     const ctx = canvas.getContext("2d");
@@ -139,27 +138,42 @@ document.addEventListener("DOMContentLoaded", function () {
           };
         },
         onEachFeature: function (feature, layer) {
-          if (feature.properties && feature.properties.ADMIN) {
-            layer.bindPopup(feature.properties.ADMIN, {
-              closeOnClick: false,
-              autoClose: false,
-            });
-
-            layer.on("click", () => {
-              const countryName = feature.properties.ADMIN;
-              const countryData = {
-                population: "N/A",
-                capital: "N/A",
-                region: "N/A",
-              };
-
-              // Update the country info window
-              updateCountryInfo(countryName, countryData);
-
-              // Add a log entry
-              addLogEntry(`Country selected: ${countryName}`);
-            });
-          }
+            if (feature.properties && feature.properties.ADMIN) {
+                // Create popup content with a close button
+                const popupContent = `
+                    <div>
+                        <span>${feature.properties.ADMIN}</span>
+                    </div>
+                `;
+        
+                // Bind the popup to the layer
+                layer.bindPopup(popupContent, { closeOnClick: false, autoClose: false });
+        
+                // Add a click event listener to the layer
+                layer.on("click", (e) => {
+                    // Close all other popups
+                    map.eachLayer(function (layer) {
+                        if (layer.getPopup) {
+                            layer.closePopup();
+                        }
+                    });
+        
+                    // Open the popup for the clicked country at the clicked location
+                    layer.openPopup(e.latlng);
+        
+                    // Update the country info window
+                    const countryName = feature.properties.ADMIN;
+                    const countryData = {
+                        population: "N/A",
+                        capital: "N/A",
+                        region: "N/A",
+                    };
+                    updateCountryInfo(countryName, countryData);
+        
+                    // Add a log entry
+                    addLogEntry(`Country selected: ${countryName}`);
+                });
+            }
         },
       }).addTo(map);
       // Dynamically fit the map to the world while avoiding empty borders
@@ -219,36 +233,36 @@ updateCountryInfo("Germany", {
   region: "Europe",
 });
 
-function addLogEntry(message, type = 'info') {
-    const timestamp = new Date().toLocaleTimeString(); // Get current time
-    const logsList = document.getElementById('logs-list');
-    const logEntry = document.createElement('li');
+function addLogEntry(message, type = "info") {
+  const timestamp = new Date().toLocaleTimeString(); // Get current time
+  const logsList = document.getElementById("logs-list");
+  const logEntry = document.createElement("li");
 
-    // Add a class for the log type (e.g., info, warning, error)
-    logEntry.classList.add(`log-${type}`);
+  // Add a class for the log type (e.g., info, warning, error)
+  logEntry.classList.add(`log-${type}`);
 
-    // Include the timestamp and message in the log entry
-    logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+  // Include the timestamp and message in the log entry
+  logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
 
-    logsList.appendChild(logEntry);
+  logsList.appendChild(logEntry);
 
-    // Auto-scroll to the latest log
-    logsList.scrollTop = logsList.scrollHeight;
+  // Auto-scroll to the latest log
+  logsList.scrollTop = logsList.scrollHeight;
 }
 
 function filterLogs(type) {
-    const logs = document.querySelectorAll('#logs-list li');
+  const logs = document.querySelectorAll("#logs-list li");
 
-    logs.forEach(log => {
-        if (type === 'all' || log.classList.contains(`log-${type}`)) {
-            log.style.display = 'block'; // Show the log
-        } else {
-            log.style.display = 'none'; // Hide the log
-        }
-    });
+  logs.forEach((log) => {
+    if (type === "all" || log.classList.contains(`log-${type}`)) {
+      log.style.display = "block"; // Show the log
+    } else {
+      log.style.display = "none"; // Hide the log
+    }
+  });
 }
 
 // Example usage
-addLogEntry('Country selected: Germany', 'info');
-addLogEntry('Warning: Low disk space', 'warning');
-addLogEntry('Error: Failed to fetch data', 'error');
+addLogEntry("Country selected: Germany", "info");
+addLogEntry("Warning: Low disk space", "warning");
+addLogEntry("Error: Failed to fetch data", "error");
