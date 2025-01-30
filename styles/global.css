@@ -1,13 +1,147 @@
+:root {
+    /* Default theme (Dracula) */
+    --background-color: #282a36;
+    --foreground-color: #f8f8f2;
+    --map-background: #44475a;
+    --pixel-background: #44475a;
+    --pixel-hover-color: #bd93f9;
+    --popup-background: rgba(68, 71, 90, 0.9); /* Slightly transparent */
+    --popup-text-color: #f8f8f2;
+    --control-background: #44475a;
+    --control-text-color: #f8f8f2;
+    --control-border-color: #6272a4;
+}
+
+[data-theme="light"] {
+    /* Light theme */
+    --background-color: #ffffff;
+    --foreground-color: #000000;
+    --map-background: #f0f0f0;
+    --pixel-background: #f0f0f0;
+    --pixel-hover-color: #50fa7b; /* Dracula green for contrast */
+    --popup-background: rgba(255, 255, 255, 0.9); /* Slightly transparent */
+    --popup-text-color: #000000;
+    --control-background: #ffffff;
+    --control-text-color: #000000;
+    --control-border-color: #cccccc;
+}
+
+[data-theme="ocean"] {
+    /* Ocean theme */
+    --background-color: #1a1a2e;
+    --foreground-color: #e0e0e0;
+    --map-background: #16213e;
+    --pixel-background: #16213e;
+    --pixel-hover-color: #00bcd4; /* Cyan for hover */
+    --popup-background: rgba(22, 33, 62, 0.9); /* Slightly transparent */
+    --popup-text-color: #e0e0e0;
+    --control-background: #16213e;
+    --control-text-color: #e0e0e0;
+    --control-border-color: #00bcd4;
+}
+
+[data-theme="crt"] {
+    /* CRT Monochrome theme */
+    --background-color: #000000;
+    --foreground-color: #00ff00;
+    --map-background: #001000;
+    --pixel-background: #001000;
+    --pixel-hover-color: #00ff00; /* Bright green for hover */
+    --popup-background: rgba(0, 16, 0, 0.9); /* Slightly transparent */
+    --popup-text-color: #00ff00;
+    --control-background: #001000;
+    --control-text-color: #00ff00;
+    --control-border-color: #00ff00;
+}
+
+[data-theme="crt"] body {
+    font-family: "VT323", monospace;
+}
+[data-theme="crt"] #map::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        rgba(0, 255, 0, 0.1) 50%,
+        transparent 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 300;
+    animation: scan 2s linear infinite;
+}
+
+@keyframes scan {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100%); }
+}
+
+/* Add scan lines effect for CRT theme */
+[data-theme="crt"] #map::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        rgba(0, 255, 0, 0.1) 50%,
+        transparent 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 300;
+    animation: scan 2s linear infinite;
+}
+
+/* Add a subtle glow effect for CRT theme */
+[data-theme="crt"] #map::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(0, 255, 0, 0.1) 0%,
+        rgba(0, 255, 0, 0) 70%
+    );
+    pointer-events: none;
+    z-index: 300;
+    background-image: linear-gradient(rgba(255, 255, 255, .4) 50%, transparent 50%, transparent);
+    background-size: 1px 3px;
+    background-repeat: repeat;
+    -webkit-animation: fadeIn 2s;
+    animation: fadeIn 2s;
+}
+
+/* Scan line animation */
+@keyframes scan {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(100%);
+    }
+}
+
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
+    background-color: var(--background-color);
+    color: var(--foreground-color);
 }
 
 #map {
-    height: 100%;
-    width: 100%;
-    position: relative;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
+    margin: 0;
+    padding: 0;
 }
 
 #pixel-grid {
@@ -17,12 +151,12 @@ html, body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 400; 
+    z-index: 400;
 }
 
 .pixel {
     position: absolute;
-    opacity: 0.3; /* Default opacity */
+    opacity: 0.3;
     width: 10px;
     height: 10px;
     border: 1px solid rgba(0, 0, 0, 0.1);
@@ -30,22 +164,243 @@ html, body {
     pointer-events: auto;
     cursor: pointer;
     z-index: 500;
+    background-color: var(--pixel-background);
 }
 
 .pixel:hover {
-    background-color: rgba(0, 0, 255, 0.3); /* Single pixel hover effect */
+    background-color: var(--pixel-hover-color);
+    opacity: 0.7;
 }
 
-/* Ensure map panes are below the pixel grid */
 .leaflet-map-pane,
 .leaflet-tile-pane {
     z-index: 200;
 }
 
-/* Ensure popups and controls are above the pixel grid */
 .leaflet-popup-pane {
     z-index: 1700;
 }
 
 .leaflet-popup {
-    z-index: 99999 !important
+    z-index: 99999 !important;
+    background-color: var(--popup-background);
+    color: var(--popup-text-color);
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.leaflet-popup-content-wrapper {
+    background-color: var(--popup-background);
+    border-radius: 4px;
+}
+
+.leaflet-popup-content {
+    color: var(--popup-text-color);
+}
+
+.leaflet-popup-tip {
+    background-color: var(--popup-background);
+}
+
+.leaflet-control {
+    background-color: var(--control-background);
+    color: var(--control-text-color);
+    border: 1px solid var(--control-border-color);
+}
+
+.leaflet-control a {
+    color: var(--control-text-color);
+}
+
+.leaflet-control a:hover {
+    background-color: var(--control-border-color);
+}
+
+/* Add a radar sweep line */
+.radar-sweep {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(0, 255, 0, 0), rgba(0, 255, 0, 1));
+    transform-origin: top center;
+    animation: sweep 4s linear infinite;
+    z-index: 1600;
+}
+
+@keyframes sweep {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Add radar pulses */
+.radar-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    border: 2px solid rgba(0, 255, 0, 0.5);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    animation: pulse 3s infinite;
+    z-index: 1500;
+}
+
+@keyframes pulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* Add a radar grid */
+.radar-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: 40px 40px;
+    background-image: radial-gradient(circle, rgba(0,255, 0, 0.5) 1px, rgba(0, 0, 0, 0) 1px);
+    z-index: 3400;
+    pointer-events: none;
+}
+
+/* Floating Windows Container */
+#floating-windows {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Allow clicks to pass through to the map */
+    z-index: 10000; /* Ensure windows are on top */
+}
+
+/* Individual Window */
+.window {
+    position: absolute;
+    width: 300px;
+    height: 200px;
+    background-color: var(--popup-background);
+    border: 1px solid var(--control-border-color);
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    pointer-events: all; /* Enable interactions within the window */
+    resize: both; /* Allow resizing */
+    opacity: 0.6; /* Add transparency */
+    transition: opacity 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.window:hover {
+    opacity: 1; /* Make the window fully opaque on hover */
+}
+
+.window-header, .window-content {
+    opacity: 1; /* Ensure the content inside the window is fully opaque */
+}
+
+/* Window Header */
+.window-header {
+    padding: 8px;
+    background-color: var(--control-background);
+    border-bottom: 1px solid var(--control-border-color);
+    cursor: move; /* Indicate draggable area */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.window-header span {
+    color: var(--control-text-color);
+    font-weight: bold;
+}
+
+/* Close Button */
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--control-text-color);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: var(--pixel-hover-color);
+}
+
+/* Window Content */
+.window-content {
+    padding: 10px;
+    color: var(--popup-text-color);
+    overflow-y: auto;
+    height: calc(100% - 40px); /* Adjust for header height */
+    scrollbar-color: var(--control-text-color) var(--control-background);
+}
+
+/* Logs List */
+#logs-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#logs-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid var(--control-border-color);
+}
+
+/* Log Filters */
+.log-filters {
+    margin-bottom: 10px;
+}
+
+.log-filters button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    background-color: var(--control-background);
+    border: 1px solid var(--control-border-color);
+    color: var(--control-text-color);
+    cursor: pointer;
+}
+
+.log-filters button:hover {
+    background-color: var(--pixel-hover-color);
+}
+
+/* Log Entries */
+#logs-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid var(--control-border-color);
+}
+
+/* Log Type Styles */
+#logs-list li.log-info {
+    color: var(--control-text-color); /* Default color for info logs */
+}
+
+#logs-list li.log-warning {
+    color: orange; /* Color for warning logs */
+}
+
+#logs-list li.log-error {
+    color: red; /* Color for error logs */
+}
+
+#logs-list li .timestamp {
+    color: gray; /* Style for timestamps */
+    font-size: 0.9em;
+    margin-right: 10px;
+}
