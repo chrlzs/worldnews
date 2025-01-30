@@ -251,6 +251,7 @@ html, body {
     opacity: 0;
     animation: pulse 3s infinite;
     z-index: 1500;
+    pointer-events: none; /* Allow clicks to pass through */
 }
 
 @keyframes pulse {
