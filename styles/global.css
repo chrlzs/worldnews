@@ -380,6 +380,10 @@ html, body {
     background-color: var(--pixel-hover-color);
 }
 
+#logs-window {
+    width: 400px;
+}
+
 /* Log Entries */
 #logs-list li {
     padding: 5px 0;
