@@ -19,6 +19,31 @@ document.addEventListener("DOMContentLoaded", function () {
   // Initialize with the default theme
   switchTheme("crt");
 
+  let selectedLayer = null; // Track the currently selected country layer
+  
+  function highlightCountry(layer) {
+    // Reset the style of the previously selected country
+    if (selectedLayer) {
+        selectedLayer.setStyle({
+            fillColor: "lightgreen", // Default fill color
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.7,
+        });
+    }
+
+    // Highlight the newly selected country
+    layer.setStyle({
+        fillColor: "orange", // Highlight color
+        weight: 2,
+        opacity: 1,
+        fillOpacity: 0.7,
+    });
+
+    // Update the selectedLayer variable
+    selectedLayer = layer;
+}
+
   const mapContainer = document.getElementById("map");
   mapContainer.style.width = "100vw";
   mapContainer.style.height = "100vh";
@@ -160,6 +185,9 @@ document.addEventListener("DOMContentLoaded", function () {
         
                     // Open the popup for the clicked country at the clicked location
                     layer.openPopup(e.latlng);
+        
+                    // Highlight the clicked country
+                    highlightCountry(layer);
         
                     // Update the country info window
                     const countryName = feature.properties.ADMIN;
