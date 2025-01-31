@@ -12,6 +12,16 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
   document.body.appendChild(themeSwitcher);
 
+  /*
+  fetch("http://localhost:5000/news")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Fetched news:", data);
+            displayNews(data.articles);
+        })
+        .catch(error => console.error("Error fetching news:", error));
+        */
+
   function switchTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
   }
@@ -223,6 +233,25 @@ document.addEventListener("DOMContentLoaded", function () {
   drawPixelGrid();
   animateRadarEffect();
 });
+
+/*
+function displayNews(articles) {
+    const newsContainer = document.getElementById("news-container");
+    newsContainer.innerHTML = ""; // Clear previous content
+
+    articles.forEach(article => {
+        const articleElement = document.createElement("div");
+        articleElement.classList.add("news-article");
+        articleElement.innerHTML = `
+            <h2>${article.title}</h2>
+            <p>${article.description || "No description available."}</p>
+            <a href="${article.url}" target="_blank">Read more</a>
+        `;
+        newsContainer.appendChild(articleElement);
+        console.log("Article added:", article.title);
+    });
+}
+    */
 
 function createBlip() {
   const blip = document.createElement("div");
