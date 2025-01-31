@@ -20,29 +20,29 @@ document.addEventListener("DOMContentLoaded", function () {
   switchTheme("crt");
 
   let selectedLayer = null; // Track the currently selected country layer
-  
+
   function highlightCountry(layer) {
     // Reset the style of the previously selected country
     if (selectedLayer) {
-        selectedLayer.setStyle({
-            fillColor: "lightgreen", // Default fill color
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.7,
-        });
+      selectedLayer.setStyle({
+        fillColor: "lightgreen", // Default fill color
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.7,
+      });
     }
 
     // Highlight the newly selected country
     layer.setStyle({
-        fillColor: "orange", // Highlight color
-        weight: 2,
-        opacity: 1,
-        fillOpacity: 0.7,
+      fillColor: "orange", // Highlight color
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.7,
     });
 
     // Update the selectedLayer variable
     selectedLayer = layer;
-}
+  }
 
   const mapContainer = document.getElementById("map");
   mapContainer.style.width = "100vw";
@@ -163,45 +163,48 @@ document.addEventListener("DOMContentLoaded", function () {
           };
         },
         onEachFeature: function (feature, layer) {
-            if (feature.properties && feature.properties.ADMIN) {
-                // Create popup content with a close button
-                const popupContent = `
+          if (feature.properties && feature.properties.ADMIN) {
+            // Create popup content with a close button
+            const popupContent = `
                     <div>
                         <span>${feature.properties.ADMIN}</span>
                     </div>
                 `;
-        
-                // Bind the popup to the layer
-                layer.bindPopup(popupContent, { closeOnClick: false, autoClose: false });
-        
-                // Add a click event listener to the layer
-                layer.on("click", (e) => {
-                    // Close all other popups
-                    map.eachLayer(function (layer) {
-                        if (layer.getPopup) {
-                            layer.closePopup();
-                        }
-                    });
-        
-                    // Open the popup for the clicked country at the clicked location
-                    layer.openPopup(e.latlng);
-        
-                    // Highlight the clicked country
-                    highlightCountry(layer);
-        
-                    // Update the country info window
-                    const countryName = feature.properties.ADMIN;
-                    const countryData = {
-                        population: "N/A",
-                        capital: "N/A",
-                        region: "N/A",
-                    };
-                    updateCountryInfo(countryName, countryData);
-        
-                    // Add a log entry
-                    addLogEntry(`Country selected: ${countryName}`);
-                });
-            }
+
+            // Bind the popup to the layer
+            layer.bindPopup(popupContent, {
+              closeOnClick: false,
+              autoClose: false,
+            });
+
+            // Add a click event listener to the layer
+            layer.on("click", (e) => {
+              // Close all other popups
+              map.eachLayer(function (layer) {
+                if (layer.getPopup) {
+                  layer.closePopup();
+                }
+              });
+
+              // Open the popup for the clicked country at the clicked location
+              layer.openPopup(e.latlng);
+
+              // Highlight the clicked country
+              highlightCountry(layer);
+
+              // Update the country info window
+              const countryName = feature.properties.ADMIN;
+              const countryData = {
+                population: "N/A",
+                capital: "N/A",
+                region: "N/A",
+              };
+              updateCountryInfo(countryName, countryData);
+
+              // Add a log entry
+              addLogEntry(`Country selected: ${countryName}`);
+            });
+          }
         },
       }).addTo(map);
       // Dynamically fit the map to the world while avoiding empty borders
