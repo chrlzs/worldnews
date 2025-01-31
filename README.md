@@ -1,89 +1,139 @@
-![GitHub license](https://img.shields.io/github/license/chrlzs/world-map-dashboard)
-![GitHub contributors](https://img.shields.io/github/contributors/chrlzs/world-map-dashboard)
-![GitHub stars](https://img.shields.io/github/stars/chrlzs/world-map-dashboard?style=social)
-![GitHub forks](https://img.shields.io/github/forks/chrlzs/world-map-dashboard?style=social)
-![GitHub last commit](https://img.shields.io/github/last-commit/chrlzs/world-map-dashboard)
 
-# World Map Dashboard
+# **WorldNews Project**
 
-This project is a dynamic, interactive world map built with [Leaflet.js](https://leafletjs.com/) and GeoJSON data. It allows users to view and interact with a world grid overlay, with countries highlighted on hover and additional features like clickable popups displaying country names. This dashboard can be adapted for various applications such as geographical data visualization, global statistics tracking, or educational tools.
+WorldNews is a project that fetches the latest news using an API. This README will guide you through setting up the frontend and backend servers, as well as making the necessary changes to access news data securely.
 
-## Features
+---
 
-- **Interactive World Grid**: Displays a grid across the world map.
-- **Country Highlighting**: Hover over countries to see their borders highlighted.
-- **Popups**: Click on any country to reveal a dismissible popup displaying its name.
-- **GeoJSON Data Integration**: Country boundaries are defined using GeoJSON for accuracy and ease of use.
-- **Leaflet.js**: Lightweight library for creating interactive maps, providing a responsive and smooth map experience.
+## **Table of Contents**
+- [Project Setup](#project-setup)
+  - [Frontend Setup](#frontend-setup)
+  - [Backend Setup](#backend-setup)
+- [Environment Variables](#environment-variables)
+- [Running the Project](#running-the-project)
+- [Deployment](#deployment)
 
-## Getting Started
+---
 
-### Installation
+## **Project Setup**
 
+### **Frontend Setup**
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/chrlzs/world-map-dashboard.git
-   cd world-map-dashboard
+   ```sh
+   git clone https://github.com/chrlzs/worldnews.git
+   cd worldnews
    ```
 
-### Running the Project
-
-To run the project locally, you can use a simple HTTP server. Here are a few methods:
-
-#### Using Python's HTTP Server
-
-If you have Python installed, you can use its built-in HTTP server:
-
-1. Open a terminal in the project directory.
-2. Run the following command:
-   ```bash
-   python -m http.server
+2. Install the necessary dependencies:
+   ```sh
+   npm install
    ```
-3. Open your browser and navigate to `http://localhost:8000`.
 
-#### Using Node.js HTTP Server
+### **Backend Setup**
+To securely handle your API keys and fetch news data, we’ve added a backend server using **Node.js** and **Express**. Follow these steps to set up the backend.
 
-If you have Node.js installed, you can use the `http-server` package:
-
-1. Install `http-server` globally:
-   ```bash
-   npm install -g http-server
+1. Navigate to your project directory and create a new folder for the backend:
+   ```sh
+   mkdir worldnews-backend && cd worldnews-backend
    ```
-2. Open a terminal in the project directory.
-3. Run the following command:
-   ```bash
-   http-server
+
+2. Initialize a new Node.js project:
+   ```sh
+   npm init -y
    ```
-4. Open your browser and navigate to the URL provided in the terminal (usually `http://localhost:8080`).
 
-#### Using Live Server Extension (Visual Studio Code)
+3. Install the required dependencies:
+   ```sh
+   npm install express dotenv axios cors
+   ```
 
-If you are using Visual Studio Code, you can use the Live Server extension:
+4. Create the necessary files:
+   ```sh
+   touch server.js .env
+   ```
 
-1. Install the Live Server extension from the VS Code marketplace.
-2. Open the project directory in VS Code.
-3. Right-click on `index.html` and select "Open with Live Server".
+5. Edit the `.env` file with your **News API** key:
+   ```
+   NEWS_API_KEY=your_api_key_here
+   PORT=5000
+   ```
 
-### Usage
+6. Create the backend server in `server.js`:
+   ```javascript
+   require('dotenv').config();
+   const express = require('express');
+   const axios = require('axios');
+   const cors = require('cors');
 
-Once the project is running, you can interact with the map by hovering over countries to highlight them and clicking on countries to see their names in popups.
+   const app = express();
+   const PORT = process.env.PORT || 5000;
 
-### Customization
+   // Middleware
+   app.use(cors());
+   app.use(express.json());
 
-- **Grid and Map Layers**: The world grid and country boundaries are defined in `world-map/public/js/core/grid.js` and `globe.js`. To customize the grid, modify the `Grid.js` file.
-- **Country Data**: GeoJSON files are used to store country boundary data and are rendered via Leaflet.js.
-- **Visual Effects**: The project includes hover and click effects, which can be adjusted in `map.js`.
+   // News API Route
+   app.get('/news', async (req, res) => {
+       try {
+           const response = await axios.get(`https://newsapi.org/v2/top-headlines`, {
+               params: {
+                   apiKey: process.env.NEWS_API_KEY,
+                   country: 'us'
+               }
+           });
+           res.json(response.data);
+       } catch (error) {
+           res.status(500).json({ error: "Failed to fetch news" });
+       }
+   });
 
-## Contributing
+   // Start Server
+   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+   ```
 
-Contributions are welcome! To contribute:
+---
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -m 'Add a new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Open a pull request
+## **Environment Variables**
 
-## License
+Ensure you have the following environment variables set in the `.env` file:
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- `NEWS_API_KEY`: Your API key for the news service (from NewsAPI).
+- `PORT`: The port for your backend server (default: `5000`).
+
+Example `.env` file:
+
+```
+NEWS_API_KEY=your_api_key_here
+PORT=5000
+```
+
+---
+
+## **Running the Project**
+
+### **1. Run the Backend Server**
+From the `worldnews-backend` folder, run the following command:
+
+```sh
+node server.js
+```
+
+This will start the server at `http://localhost:5000`. The backend is responsible for fetching news data securely.
+
+### **2. Run the Frontend Application**
+Once your backend is running, open the `worldnews` folder in your terminal and run:
+
+```sh
+npm start
+```
+
+Visit `http://localhost:3000` to view the frontend application.
+
+---
+
+## **Deployment**
+
+Once you’re ready to deploy the application, you can deploy the backend server using platforms like **Render**, **Vercel**, or **Railway**. The frontend can be deployed on platforms like **Netlify** or **Vercel** as well.
+
+For deployment, don’t forget to set up the necessary environment variables in your chosen platform (e.g., **NEWS_API_KEY**) through the platform's dashboard.
+
